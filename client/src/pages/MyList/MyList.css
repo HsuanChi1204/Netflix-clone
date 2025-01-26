@@ -1,0 +1,132 @@
+.my-list {
+    padding: 20px;
+    color: white;
+    min-height: 100vh;
+    background-color: #141414;
+}
+
+.my-list-content {
+    margin-top: 70px;
+    padding: 20px;
+}
+
+.my-list h1 {
+    margin-bottom: 30px;
+    font-size: 2.5rem;
+}
+
+.favorites-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 20px 0;
+}
+
+.favorite-item {
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.favorite-item:hover {
+    transform: scale(1.05);
+}
+
+.favorite-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 4px;
+}
+
+.favorite-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.5), transparent);
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.favorite-item:hover .favorite-overlay {
+    opacity: 1;
+}
+
+.favorite-overlay h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.1rem;
+    color: white;
+}
+
+.remove-button {
+    background-color: #e50914;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s ease;
+}
+
+.remove-button:hover {
+    background-color: #ff0f1a;
+}
+
+.no-favorites {
+    text-align: center;
+    padding: 50px;
+    font-size: 1.2rem;
+    color: #999;
+}
+
+.loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.loading-spinner {
+    color: #e50914;
+    font-size: 1.2rem;
+}
+
+@media (max-width: 800px) {
+    .my-list-content {
+        padding: 80px 4% 20px;
+    }
+
+    .my-list-content h1 {
+        font-size: 2rem;
+    }
+
+    .favorites-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+}
+
+@media (max-width: 500px) {
+    .my-list-content h1 {
+        font-size: 1.5rem;
+    }
+
+    .favorites-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+    }
+
+    .favorite-overlay h3 {
+        font-size: 0.9rem;
+    }
+
+    .remove-button {
+        padding: 6px 12px;
+        font-size: 0.9rem;
+    }
+} 
