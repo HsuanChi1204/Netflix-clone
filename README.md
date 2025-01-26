@@ -2,7 +2,16 @@
 
 A full-stack Netflix clone built with the MERN stack (MongoDB, Express.js, React.js, Node.js), featuring user authentication, movie browsing, favorites management, and a comment system.
 
-![Netflix Clone Demo](demo-screenshot.png)
+## 📸 Screenshots
+
+### Home Page
+![Home Page](.github/assets/home-preview.png)
+
+### Movie Details with Comments
+![Movie Details](.github/assets/movie-detail.png)
+
+### Favorites List
+![Favorites List](.github/assets/favorites-list.png)
 
 ## 🚀 Features
 
