@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import "./Player.css";
 import { useNavigate, useParams } from "react-router-dom";
 import back_arrow from "../../assets/back_arrow_icon.png";
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const Player = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [videoKey, setVideoKey] = useState("");
+  const { currentLanguage, t } = useLanguage();
 
   const options = {
     method: "GET",
@@ -18,8 +20,9 @@ const Player = () => {
   };
 
   useEffect(() => {
+    const language = currentLanguage === 'zh-TW' ? 'zh-TW' : 'en-US';
     fetch(
-      `https://api.themoviedb.org/3/movie/${id}/videos?language=en-US`,
+      `https://api.themoviedb.org/3/movie/${id}/videos?language=${language}`,
       options
     )
       .then((res) => res.json())
@@ -32,27 +35,33 @@ const Player = () => {
         }
       })
       .catch((err) => console.error(err));
-  }, [id]);
+  }, [id, currentLanguage]);
 
-  const handleBack = () => {
-    navigate(-1); // 使用瀏覽器的歷史記錄返回上一頁
+  const handleBack = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(-1);
   };
 
   return (
     <div className="player">
-      <div className="back">
-        <img src={back_arrow} alt="" onClick={handleBack} />
+      <div className="back" onClick={handleBack}>
+        <img 
+          src={back_arrow} 
+          alt={t('movie.back')}
+          title={t('movie.back')}
+        />
       </div>
       {videoKey ? (
         <iframe
-          src={`https://www.youtube.com/embed/${videoKey}?autoplay=1&controls=1`}
+          src={`https://www.youtube.com/embed/${videoKey}?autoplay=1&controls=1&modestbranding=1&origin=${window.location.origin}`}
           title="YouTube video player"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
         ></iframe>
       ) : (
-        <div className="loading">載入中...</div>
+        <div className="loading">{t('common.loading')}</div>
       )}
     </div>
   );

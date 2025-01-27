@@ -7,8 +7,11 @@ import play_icon from "../../assets/play_icon.png";
 import info_icon from "../../assets/info_icon.png";
 import TitleCards from "../../components/TitleCards/TitleCards";
 import Footer from "../../components/Footer/Footer";
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const Home = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="home">
       <Navbar />
@@ -35,10 +38,10 @@ const Home = () => {
         </div>
       </div>
       <div className="more-cards">
-        <TitleCards title={"Blockcuster Movie"} category={"top_rated"} />
-        <TitleCards title={"Only on Netflix"} category={"popular"} />
-        <TitleCards title={"Upcoming"} category={"upcoming"} />
-        <TitleCards title={"Top Pics for You"} category={"now_playing"} />
+        <TitleCards title={t('movie.topRated')} category="top_rated" />
+        <TitleCards title={t('movie.onlyOnNetflix')} category="popular" />
+        <TitleCards title={t('movie.upcoming')} category="upcoming" />
+        <TitleCards title={t('movie.topPicsForYou')} category="now_playing" />
       </div>
       <Footer />
     </div>

@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { AiOutlineHeart, AiFillHeart, AiOutlineClose, AiOutlineInfoCircle, AiOutlinePlayCircle, AiFillStar, AiOutlineStar } from "react-icons/ai";
+import { useLanguage } from '../../contexts/LanguageContext';
 
 // 設置 axios 基礎 URL
 axios.defaults.baseURL = 'http://localhost:5001';
@@ -11,6 +12,9 @@ axios.defaults.baseURL = 'http://localhost:5001';
 const TitleCards = ({ title, category }) => {
   const navigate = useNavigate();
   const [apiData, setApiData] = useState([]);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [favorites, setFavorites] = useState({});
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [trailerKey, setTrailerKey] = useState(null);
@@ -18,13 +22,13 @@ const TitleCards = ({ title, category }) => {
   const [newComment, setNewComment] = useState('');
   const [rating, setRating] = useState(0);
   const cardsRef = useRef();
+  const { currentLanguage, t } = useLanguage();
 
   const options = {
     method: "GET",
     headers: {
       accept: "application/json",
-      Authorization:
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhMWYxN2FlYTUzODFhZWI2YjgzYjUxYWEwNzg1YmI3MSIsIm5iZiI6MTczMTA2MjA4MC43NzQxNzc4LCJzdWIiOiI2NzJkZTg1YmQ5OGJiYzM5NzdhZDUwZGQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.ehPZsqGQ4dEinJHjl8iSTmHT4tt_J2e07Jywn0cLCHE",
+      Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhMWYxN2FlYTUzODFhZWI2YjgzYjUxYWEwNzg1YmI3MSIsIm5iZiI6MTczMTA2MjA4MC43NzQxNzc4LCJzdWIiOiI2NzJkZTg1YmQ5OGJiYzM5NzdhZDUwZGQiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.ehPZsqGQ4dEinJHjl8iSTmHT4tt_J2e07Jywn0cLCHE",
     },
   };
 
@@ -50,7 +54,7 @@ const TitleCards = ({ title, category }) => {
       }));
     } catch (error) {
       if (error.response?.status === 401) {
-        toast.error('登入已過期，請重新登入');
+        toast.error(t('auth.sessionExpired'));
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         navigate('/login');
@@ -65,15 +69,13 @@ const TitleCards = ({ title, category }) => {
     
     const token = localStorage.getItem('token');
     if (!token) {
-      toast.error('請先登入');
+      toast.error(t('auth.pleaseLogin'));
       navigate('/login');
       return;
     }
 
     try {
-      console.log('正在切換電影 ID:', movie.id, '的收藏狀態');
       if (favorites[movie.id]) {
-        console.log('正在取消收藏');
         await axios.delete(`/api/favorites/${movie.id}`, {
           headers: {
             Authorization: `Bearer ${token}`
@@ -83,42 +85,34 @@ const TitleCards = ({ title, category }) => {
           ...prev,
           [movie.id]: false
         }));
-        toast.success('已從收藏清單中移除');
+        toast.success(t('movie.removedFromList'));
       } else {
-        console.log('正在新增收藏');
         const movieData = {
           movieId: movie.id.toString(),
-          title: movie.original_title || movie.title,
+          title: movie.title,
           posterPath: movie.backdrop_path,
           mediaType: 'movie'
         };
-        console.log('傳送的電影資料:', movieData);
         
         await axios.post('/api/favorites', movieData, {
           headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
+            Authorization: `Bearer ${token}`
           }
         });
         setFavorites(prev => ({
           ...prev,
           [movie.id]: true
         }));
-        toast.success('已加入收藏清單');
+        toast.success(t('movie.addedToList'));
       }
     } catch (error) {
-      console.error('更新收藏狀態失敗:', {
-        status: error.response?.status,
-        message: error.response?.data?.message,
-        error: error.message
-      });
       if (error.response?.status === 401) {
-        toast.error('登入已過期，請重新登入');
+        toast.error(t('auth.sessionExpired'));
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         navigate('/login');
       } else {
-        toast.error(error.response?.data?.message || '操作失敗，請稍後重試');
+        toast.error(error.response?.data?.message || t('common.error'));
       }
     }
   };
@@ -126,8 +120,13 @@ const TitleCards = ({ title, category }) => {
   const fetchTrailer = async (movieId) => {
     try {
       const response = await axios.get(
-        `https://api.themoviedb.org/3/movie/${movieId}/videos?language=en-US`,
-        options
+        `https://api.themoviedb.org/3/movie/${movieId}/videos`,
+        {
+          ...options,
+          params: {
+            language: currentLanguage === 'zh-TW' ? 'zh-TW' : 'en-US'
+          }
+        }
       );
       const trailer = response.data.results.find(
         video => video.type === "Trailer" || video.type === "Teaser"
@@ -137,6 +136,29 @@ const TitleCards = ({ title, category }) => {
       }
     } catch (error) {
       console.error('獲取預告片失敗:', error);
+    }
+  };
+
+  const fetchMovieDetails = async (movieId) => {
+    try {
+      const response = await axios.get(
+        `https://api.themoviedb.org/3/movie/${movieId}?language=${currentLanguage === 'zh-TW' ? 'zh-TW' : 'en-US'}`,
+        options
+      );
+      return response.data;
+    } catch (error) {
+      console.error('獲取電影詳情失敗:', error);
+      return null;
+    }
+  };
+
+  const handleInfoClick = async (e, movie) => {
+    e.preventDefault();
+    const movieDetails = await fetchMovieDetails(movie.id);
+    if (movieDetails) {
+      setSelectedMovie(movieDetails);
+      await fetchTrailer(movie.id);
+      await fetchComments(movie.id);
     }
   };
 
@@ -158,13 +180,6 @@ const TitleCards = ({ title, category }) => {
         toast.error('獲取評論失敗，請稍後重試');
       }
     }
-  };
-
-  const handleInfoClick = async (e, movie) => {
-    e.preventDefault();
-    setSelectedMovie(movie);
-    await fetchTrailer(movie.id);
-    await fetchComments(movie.id);
   };
 
   const handleCommentSubmit = async (e) => {
@@ -238,48 +253,93 @@ const TitleCards = ({ title, category }) => {
     setTrailerKey(null);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          `https://api.themoviedb.org/3/movie/${
-            category ? category : "now_playing"
-          }?language=zh-TW&page=1`,
-          options
-        );
-        const data = await response.json();
+  const fetchData = async (pageNumber = 1) => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        `https://api.themoviedb.org/3/movie/${category ? category : "now_playing"}?language=${currentLanguage === 'zh-TW' ? 'zh-TW' : 'en-US'}&page=${pageNumber}`,
+        options
+      );
+      const data = await response.json();
+      if (pageNumber === 1) {
         setApiData(data.results);
-        
-        const token = localStorage.getItem('token');
-        if (token) {
-          data.results.forEach(movie => {
-            checkFavoriteStatus(movie.id);
-          });
-        }
-      } catch (err) {
-        console.error(err);
-        toast.error('載入影片資料失敗');
+      } else {
+        setApiData(prev => [...prev, ...data.results]);
       }
-    };
+      setHasMore(data.page < data.total_pages);
+      
+      const token = localStorage.getItem('token');
+      if (token) {
+        data.results.forEach(movie => {
+          checkFavoriteStatus(movie.id);
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(t('common.error'));
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handleScroll = () => {
+    if (!cardsRef.current || loading || !hasMore) return;
+
+    const { scrollLeft, scrollWidth, clientWidth } = cardsRef.current;
+    if (scrollWidth - scrollLeft - clientWidth < 100) {
+      setPage(prev => prev + 1);
+    }
+  };
+
+  useEffect(() => {
     fetchData();
+  }, [category, currentLanguage]);
 
+  useEffect(() => {
+    if (page > 1) {
+      fetchData(page);
+    }
+  }, [page]);
+
+  // 當語言改變時重新獲取電影詳情
+  useEffect(() => {
+    if (selectedMovie) {
+      fetchMovieDetails(selectedMovie.id).then(details => {
+        if (details) {
+          setSelectedMovie(details);
+        }
+      });
+    }
+  }, [currentLanguage]);
+
+  useEffect(() => {
     const handleWheelEvent = (event) => {
       if (cardsRef.current) {
         handleWheel(event);
       }
     };
 
-    cardsRef.current?.addEventListener("wheel", handleWheelEvent);
+    const handleScrollEvent = () => {
+      handleScroll();
+    };
+
+    const currentRef = cardsRef.current;
+    if (currentRef) {
+      currentRef.addEventListener("wheel", handleWheelEvent);
+      currentRef.addEventListener("scroll", handleScrollEvent);
+    }
     
     return () => {
-      cardsRef.current?.removeEventListener("wheel", handleWheelEvent);
+      if (currentRef) {
+        currentRef.removeEventListener("wheel", handleWheelEvent);
+        currentRef.removeEventListener("scroll", handleScrollEvent);
+      }
     };
-  }, [category]);
+  }, [loading, hasMore]);
 
   return (
     <div className="title-cards">
-      <h2>{title ? title : "熱門影片"}</h2>
+      <h2>{title ? t(title) : t('movie.popularMovies')}</h2>
       <div className="card-list" ref={cardsRef}>
         {apiData.map((movie) => (
           <div className="card" key={movie.id}>
@@ -288,13 +348,13 @@ const TitleCards = ({ title, category }) => {
                 src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}
                 alt={movie.title}
               />
-              <div className="title-overlay">{movie.title}</div>
+              <div className="title-overlay">{movie.title || movie.name}</div>
             </Link>
             <button 
               className="info-button"
               onClick={(e) => handleInfoClick(e, movie)}
             >
-              <AiOutlineInfoCircle /> 了解更多
+              <AiOutlineInfoCircle /> {t('movie.learnMore')}
             </button>
             <button 
               className="favorite-button"
@@ -341,13 +401,13 @@ const TitleCards = ({ title, category }) => {
               </div>
               <div className="modal-body">
                 <div className="modal-details">
-                  <span>{new Date(selectedMovie.release_date).getFullYear()}</span>
-                  <span>評分: {selectedMovie.vote_average.toFixed(1)}</span>
+                  <span>{t('movie.releaseYear')}: {new Date(selectedMovie.release_date).getFullYear()}</span>
+                  <span>{t('movie.rating')}: {selectedMovie.vote_average.toFixed(1)}</span>
                 </div>
-                <p className="modal-overview">{selectedMovie.overview || '暫無簡介'}</p>
+                <p className="modal-overview">{selectedMovie.overview || t('movie.noOverview')}</p>
                 <div className="modal-buttons">
                   <Link to={`/player/${selectedMovie.id}`} className="play-button">
-                    <AiOutlinePlayCircle /> 播放
+                    <AiOutlinePlayCircle /> {t('movie.play')}
                   </Link>
                   <button 
                     className="favorite-button-large"
@@ -358,26 +418,26 @@ const TitleCards = ({ title, category }) => {
                     ) : (
                       <AiOutlineHeart className="heart-icon" />
                     )}
-                    {favorites[selectedMovie.id] ? '取消收藏' : '加入收藏'}
+                    {favorites[selectedMovie.id] ? t('movie.removeFromList') : t('movie.addToList')}
                   </button>
                 </div>
               </div>
               <div className="modal-comments">
-                <h4>觀眾評論</h4>
+                <h4>{t('comments.title')}</h4>
                 <div className="comment-form">
                   <div className="rating-input">
-                    <span>評分：</span>
+                    <span>{t('comments.rating')}：</span>
                     {renderStars(rating, true)}
                   </div>
                   <form onSubmit={handleCommentSubmit}>
                     <textarea
                       value={newComment}
                       onChange={(e) => setNewComment(e.target.value)}
-                      placeholder="分享你的想法..."
+                      placeholder={t('comments.placeholder')}
                       required
                     />
                     <button type="submit" className="comment-submit">
-                      發布評論
+                      {t('comments.submit')}
                     </button>
                   </form>
                 </div>

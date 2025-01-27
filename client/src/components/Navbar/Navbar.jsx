@@ -7,6 +7,9 @@ import profile_img from "../../assets/profile_img.png";
 import caret_icon from "../../assets/caret_icon.svg";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useLanguage } from '../../contexts/LanguageContext';
+import { MdLanguage } from 'react-icons/md';
+import { AiOutlineSearch } from 'react-icons/ai';
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -16,6 +19,7 @@ const Navbar = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef(null);
+  const { t, currentLanguage, toggleLanguage } = useLanguage();
   
   useEffect(() => {
     // 從 localStorage 讀取用戶資訊
@@ -93,34 +97,31 @@ const Navbar = () => {
         <ul>
           <li>
             <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
-              首頁
+              {t('navbar.home')}
             </Link>
           </li>
-          <li>節目</li>
-          <li>電影</li>
-          <li>最新熱門</li>
+          <li>{t('navbar.tvShows')}</li>
+          <li>{t('navbar.movies')}</li>
+          <li>{t('navbar.trending')}</li>
           <li>
             <Link to="/my-list" className={location.pathname === '/my-list' ? 'active' : ''}>
-              我的片單
+              {t('navbar.myList')}
             </Link>
           </li>
-          <li>依語言瀏覽</li>
+          <li>{t('navbar.browseByLanguage')}</li>
         </ul>
       </div>
       <div className="navbar-right">
         <div className={`search-container ${showSearch ? 'active' : ''}`}>
-          <img 
-            src={search_icon} 
-            alt="搜尋" 
-            className="icons search-icon" 
-            onClick={toggleSearch}
-          />
+          <button className="search-icon" onClick={toggleSearch}>
+            <AiOutlineSearch />
+          </button>
           {showSearch && (
             <form onSubmit={handleSearch} className="search-form">
               <input
                 ref={searchInputRef}
                 type="text"
-                placeholder="搜尋電影..."
+                placeholder={t('navbar.search')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={handleSearchKeyPress}
@@ -128,7 +129,10 @@ const Navbar = () => {
             </form>
           )}
         </div>
-        <p>兒童專區</p>
+        <button className="language-button" onClick={toggleLanguage}>
+          <MdLanguage />
+          <span>{currentLanguage === 'zh-TW' ? '中文' : 'EN'}</span>
+        </button>
         <img src={bell_icon} alt="" className="icons" />
         <div className="navbar-profile">
           <img 
@@ -149,7 +153,7 @@ const Navbar = () => {
               </>
             )}
             <p onClick={handleLogout}>
-              登出 Netflix
+              {t('auth.logout')}
             </p>
           </div>
         </div>

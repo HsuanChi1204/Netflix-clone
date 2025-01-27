@@ -53,7 +53,7 @@
 }
 
 .search-container.active .search-icon {
-  color: #fff;
+  color: #ffffff;
 }
 
 .search-form {
@@ -197,4 +197,29 @@
   .search-form input {
     width: 120px;
   }
+}
+
+.language-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  color: white;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.language-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.language-button svg {
+  font-size: 1.2rem;
+}
+
+.language-button span {
+  font-size: 0.9rem;
 }
