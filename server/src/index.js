@@ -1,14 +1,14 @@
+const dotenv = require('dotenv');
+// 加載環境變量（必須在其他 require 之前）
+dotenv.config();
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
-const dotenv = require('dotenv');
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/auth.routes');
 const favoritesRoutes = require('./routes/favorites.routes');
 const commentsRoutes = require('./routes/comments.routes');
-
-// 加載環境變量
-dotenv.config();
 
 // 初始化 Express 應用
 const app = express();
@@ -45,4 +45,6 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  console.log('Environment:', process.env.NODE_ENV);
+  console.log('MongoDB URI exists:', !!process.env.MONGODB_URI);
 }); 
