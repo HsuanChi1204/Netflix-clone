@@ -1,0 +1,119 @@
+name: Netflix Clone CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x]
+        
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        
+    - name: Install Dependencies (Client)
+      run: |
+        cd client
+        npm ci
+        
+    - name: Install Dependencies (Server)
+      run: |
+        cd server
+        npm ci
+        
+    - name: Run Tests (Client)
+      run: |
+        cd client
+        npm test
+      env:
+        CI: true
+        
+    - name: Run Tests (Server)
+      run: |
+        cd server
+        npm test
+      env:
+        CI: true
+        MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+  lint:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Use Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18.x'
+        
+    - name: Install Dependencies (Client)
+      run: |
+        cd client
+        npm ci
+        
+    - name: Run ESLint (Client)
+      run: |
+        cd client
+        npm run lint
+        
+    - name: Install Dependencies (Server)
+      run: |
+        cd server
+        npm ci
+        
+    - name: Run ESLint (Server)
+      run: |
+        cd server
+        npm run lint
+
+  deploy:
+    needs: [test, lint]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    # Deploy Frontend to Vercel
+    - name: Install Vercel CLI
+      run: npm install --global vercel@latest
+
+    - name: Pull Vercel Environment Information
+      run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+    - name: Build Client
+      run: |
+        cd client
+        npm ci
+        npm run build
+      env:
+        VITE_API_URL: ${{ secrets.VITE_API_URL }}
+        
+    - name: Deploy Client to Vercel
+      run: |
+        cd client
+        vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
+
+    # Deploy Backend to Railway
+    - name: Install Railway CLI
+      run: npm i -g @railway/cli
+
+    - name: Deploy Server to Railway
+      run: |
+        cd server
+        railway up
+      env:
+        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }} 
