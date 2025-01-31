@@ -17,8 +17,7 @@ const commentSchema = new mongoose.Schema({
   content: {
     type: String,
     required: true,
-    trim: true,
-    maxLength: 1000
+    maxLength: 500
   },
   rating: {
     type: Number,

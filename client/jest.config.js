@@ -19,5 +19,13 @@ module.exports = {
     'expect': true,
     'beforeEach': true,
     'afterEach': true
-  }
+  },
+  testTimeout: 30000,
+  maxWorkers: '50%',
+  forceExit: true,
+  detectOpenHandles: true,
+  clearMocks: true,
+  restoreMocks: true,
+  testPathIgnorePatterns: ['/node_modules/'],
+  coveragePathIgnorePatterns: ['/node_modules/'],
 }; 

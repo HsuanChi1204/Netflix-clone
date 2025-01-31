@@ -33,3 +33,7 @@ yarn-error.log*
 
 # OS
 Thumbs.db
+
+# Development Notes
+development-notes.md
+TODO.md

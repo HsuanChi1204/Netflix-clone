@@ -6,12 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
+    "lint": "eslint . --fix --max-warnings 50",
     "preview": "vite preview",
-    "test": "jest --config jest.config.js --maxWorkers=50%",
+    "test": "jest --config jest.config.js --detectOpenHandles --forceExit",
     "test:watch": "jest --config jest.config.js --watch",
     "test:coverage": "jest --config jest.config.js --coverage",
-    "test:ci": "jest --config jest.config.js --ci --coverage --maxWorkers=2"
+    "test:ci": "jest --config jest.config.js --ci --coverage --maxWorkers=2 --forceExit --detectOpenHandles"
   },
   "dependencies": {
     "axios": "^1.7.9",
