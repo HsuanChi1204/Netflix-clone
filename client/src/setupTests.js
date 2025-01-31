@@ -1,22 +1,38 @@
 import '@testing-library/jest-dom';
-
-// Mock window.matchMedia
-window.matchMedia = window.matchMedia || function() {
-  return {
-    matches: false,
-    addListener: function() {},
-    removeListener: function() {}
-  };
-};
+import { jest } from '@jest/globals';
 
 // Mock IntersectionObserver
-class IntersectionObserver {
-  constructor() {}
-  observe() { return null; }
-  unobserve() { return null; }
-  disconnect() { return null; }
+class MockIntersectionObserver {
+  observe() {}
+  disconnect() {}
+  unobserve() {}
 }
-window.IntersectionObserver = IntersectionObserver;
+
+global.IntersectionObserver = MockIntersectionObserver;
+
+// Mock matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+});
+
+// Mock scrollTo
+window.scrollTo = jest.fn();
+Element.prototype.scrollTo = jest.fn();
+window.HTMLElement.prototype.scrollIntoView = jest.fn();
+window.scrollIntoView = jest.fn();
+
+// Set up global variables
+global.jest = jest;
 
 // Mock localStorage
 const localStorageMock = {

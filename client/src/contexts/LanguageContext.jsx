@@ -1,4 +1,5 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext } from 'react';
+import PropTypes from 'prop-types';
 import enUS from '../locales/en-US';
 import zhTW from '../locales/zh-TW';
 
@@ -11,6 +12,8 @@ export const useLanguage = () => {
   }
   return context;
 };
+
+export { LanguageContext };
 
 export const LanguageProvider = ({ children }) => {
   // 從 localStorage 獲取語言設置，默認為繁體中文
@@ -50,4 +53,8 @@ export const LanguageProvider = ({ children }) => {
       {children}
     </LanguageContext.Provider>
   );
+};
+
+LanguageProvider.propTypes = {
+  children: PropTypes.node.isRequired
 }; 

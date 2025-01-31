@@ -1,137 +1,155 @@
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import React from 'react';
-import { render, fireEvent, waitFor, act } from '@testing-library/react';
-import { useNavigate, useParams } from 'react-router-dom';
-import Player from '../Player';
-import { LanguageProvider } from '../../../contexts/LanguageContext';
-import fetchMock from 'jest-fetch-mock';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { BrowserRouter, useNavigate, useParams } from 'react-router-dom';
 import { useLanguage } from '../../../contexts/LanguageContext';
+import Player from '../Player';
 
-// Enable fetch mocking
-fetchMock.enableMocks();
-
-// Mock react-router-dom
+// Mock modules
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
   useNavigate: jest.fn(),
-  useParams: jest.fn()
+  useParams: jest.fn(),
 }));
 
-const mockTrailer = {
-  results: [
-    {
-      key: 'test-trailer-key',
-      type: 'Trailer'
-    }
-  ]
-};
+jest.mock('../../../contexts/LanguageContext', () => ({
+  useLanguage: jest.fn(),
+}));
+
+// Mock images
+jest.mock('../../../assets/back_arrow_icon.png', () => 'test-file-stub');
+
+// Mock fetch
+const mockFetch = jest.fn();
+global.fetch = mockFetch;
 
 describe('Player Component', () => {
-  const navigate = jest.fn();
-  
+  const mockNavigate = jest.fn();
+  const mockVideoData = {
+    results: [
+      {
+        key: 'test-video-key',
+        type: 'Trailer',
+      },
+    ],
+  };
+
   beforeEach(() => {
     jest.clearAllMocks();
-    useNavigate.mockImplementation(() => navigate);
-    useParams.mockImplementation(() => ({ id: '123' }));
-    fetchMock.resetMocks();
-    
-    // Mock successful API response
-    fetchMock.mockResponse(JSON.stringify(mockTrailer));
-
-    // Reset localStorage
-    localStorage.clear();
-    localStorage.setItem('language', 'zh-TW');
+    useNavigate.mockReturnValue(mockNavigate);
+    useParams.mockReturnValue({ id: '123' });
+    useLanguage.mockReturnValue({
+      currentLanguage: 'zh-TW',
+      t: (key) => ({
+        'movie.back': '返回',
+        'common.loading': '載入中...',
+      }[key]),
+    });
+    mockFetch.mockResolvedValue({
+      json: () => Promise.resolve(mockVideoData),
+    });
+    // Mock console.error
+    jest.spyOn(console, 'error').mockImplementation(() => {});
   });
+
+  afterEach(() => {
+    // Restore console.error
+    console.error.mockRestore();
+  });
+
+  const renderWithRouter = () => {
+    return render(
+      <BrowserRouter>
+        <Player />
+      </BrowserRouter>
+    );
+  };
 
   it('renders loading state initially', () => {
-    const { getByText } = render(
-      <LanguageProvider>
-        <Player />
-      </LanguageProvider>
-    );
+    renderWithRouter();
+    expect(screen.getByText('載入中...')).toBeInTheDocument();
+  });
+
+  it('renders video player when data is loaded', async () => {
+    renderWithRouter();
     
-    expect(getByText('載入中...')).toBeInTheDocument();
-  });
-
-  it('loads and displays trailer when available', async () => {
-    const { container } = render(
-      <LanguageProvider>
-        <Player />
-      </LanguageProvider>
-    );
-
     await waitFor(() => {
-      const iframe = container.querySelector('iframe');
+      const iframe = screen.getByTitle('YouTube video player');
       expect(iframe).toBeInTheDocument();
-      expect(iframe.src).toContain('test-trailer-key');
-    });
-  });
-
-  it('navigates back when back button is clicked', () => {
-    const { container } = render(
-      <LanguageProvider>
-        <Player />
-      </LanguageProvider>
-    );
-
-    const backButton = container.querySelector('.back');
-    fireEvent.click(backButton);
-
-    expect(navigate).toHaveBeenCalledWith(-1);
-  });
-
-  it('updates trailer based on language change', async () => {
-    const TestComponent = () => {
-      const { currentLanguage, toggleLanguage } = useLanguage();
-      return (
-        <div>
-          <button onClick={toggleLanguage} data-testid="language-toggle">
-            {currentLanguage}
-          </button>
-          <Player />
-        </div>
+      expect(iframe).toHaveAttribute(
+        'src',
+        expect.stringContaining('test-video-key')
       );
-    };
-
-    const { getByTestId, container } = render(
-      <LanguageProvider>
-        <TestComponent />
-      </LanguageProvider>
-    );
-
-    // 等待初始預告片載入
-    await waitFor(() => {
-      const iframe = container.querySelector('iframe');
-      expect(iframe).toBeInTheDocument();
     });
+  });
 
-    // 切換語言前重置 mock
-    fetchMock.resetMocks();
-    fetchMock.mockResponse(JSON.stringify({
-      ...mockTrailer,
-      results: [
-        {
-          key: 'test-trailer-key-en',
-          type: 'Trailer'
-        }
-      ]
-    }));
+  it('handles back button click', () => {
+    renderWithRouter();
+    
+    const backButton = screen.getByAltText('返回');
+    fireEvent.click(backButton);
+    
+    expect(mockNavigate).toHaveBeenCalledWith(-1);
+  });
 
-    // 切換語言
-    await act(async () => {
-      fireEvent.click(getByTestId('language-toggle'));
-    });
-
-    // 驗證是否重新獲取預告片
+  it('updates video when language changes', async () => {
+    // First render with Chinese
+    renderWithRouter();
+    
     await waitFor(() => {
-      expect(fetchMock).toHaveBeenCalled();
-      const lastCall = fetchMock.mock.calls[fetchMock.mock.calls.length - 1][0];
-      expect(lastCall).toContain('language=en-US');
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://api.themoviedb.org/3/movie/123/videos?language=zh-TW',
+        expect.any(Object)
+      );
     });
-
-    // 驗證預告片是否更新
+    
+    // Change language to English
+    useLanguage.mockReturnValue({
+      currentLanguage: 'en-US',
+      t: (key) => ({
+        'movie.back': 'Back',
+        'common.loading': 'Loading...',
+      }[key]),
+    });
+    
+    // Re-render
+    renderWithRouter();
+    
     await waitFor(() => {
-      const iframe = container.querySelector('iframe');
-      expect(iframe.src).toContain('test-trailer-key-en');
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://api.themoviedb.org/3/movie/123/videos?language=en-US',
+        expect.any(Object)
+      );
+    });
+  });
+
+  it('handles API error gracefully', async () => {
+    // Mock API error
+    const testError = new Error('API Error');
+    mockFetch.mockRejectedValueOnce(testError);
+    
+    renderWithRouter();
+    
+    // Should still show loading state
+    expect(screen.getByText('載入中...')).toBeInTheDocument();
+    
+    // Should log error
+    await waitFor(() => {
+      expect(console.error).toHaveBeenCalledWith(testError);
+    });
+  });
+
+  it('handles empty video results', async () => {
+    // Mock empty results
+    mockFetch.mockResolvedValueOnce({
+      json: () => Promise.resolve({ results: [] }),
+    });
+    
+    renderWithRouter();
+    
+    // Should show loading state when no video is available
+    await waitFor(() => {
+      expect(screen.getByText('載入中...')).toBeInTheDocument();
     });
   });
 }); 

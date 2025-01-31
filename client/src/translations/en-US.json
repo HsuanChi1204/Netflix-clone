@@ -1,0 +1,50 @@
+{
+    "auth": {
+        "login": "Login",
+        "register": "Register",
+        "logout": "Logout",
+        "email": "Email",
+        "password": "Password",
+        "name": "Name",
+        "loginSuccess": "Login successful",
+        "registerSuccess": "Registration successful",
+        "sessionExpired": "Session expired, please login again",
+        "invalidCredentials": "Invalid email or password"
+    },
+    "navbar": {
+        "home": "Home",
+        "myList": "My List",
+        "search": "Search",
+        "searchPlaceholder": "Search movies..."
+    },
+    "movie": {
+        "play": "Play",
+        "addToList": "Add to My List",
+        "removeFromList": "Remove from My List",
+        "addedToList": "Added to My List",
+        "removedFromList": "Removed from My List",
+        "learnMore": "More Info",
+        "releaseYear": "Release Year",
+        "popularMovies": "Popular Movies",
+        "trailerNotFound": "Trailer not found",
+        "trailerError": "Error loading trailer"
+    },
+    "myList": {
+        "empty": "Your list is currently empty"
+    },
+    "comments": {
+        "title": "Comments",
+        "rating": "Rating",
+        "placeholder": "Write your comment...",
+        "submit": "Submit",
+        "addSuccess": "Comment added successfully",
+        "addError": "Failed to add comment",
+        "fetchError": "Failed to load comments",
+        "ratingRequired": "Please select a rating",
+        "contentRequired": "Please enter a comment"
+    },
+    "common": {
+        "loading": "Loading...",
+        "error": "Operation failed, please try again later"
+    }
+} 

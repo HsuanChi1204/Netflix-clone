@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import './Search.css';
 import Navbar from '../../components/Navbar/Navbar';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const Search = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
     const [results, setResults] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const query = searchParams.get('q');
+    const { t } = useLanguage();
 
     useEffect(() => {
         const searchMovies = async () => {
@@ -20,8 +23,8 @@ const Search = () => {
                 return;
             }
 
+            setLoading(true);
             try {
-                setLoading(true);
                 const response = await axios.get(
                     `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}&language=zh-TW`,
                     {
@@ -30,17 +33,23 @@ const Search = () => {
                         }
                     }
                 );
+                
+                if (!response.data || !response.data.results) {
+                    throw new Error('Invalid response data');
+                }
+                
                 setResults(response.data.results);
             } catch (error) {
                 console.error('搜尋失敗:', error);
-                toast.error('搜尋時發生錯誤');
+                toast.error(t('common.error'));
+                setResults([]);
             } finally {
                 setLoading(false);
             }
         };
 
         searchMovies();
-    }, [query]);
+    }, [query, t]);
 
     const handleMovieClick = (movieId) => {
         navigate(`/player/${movieId}`);
@@ -52,10 +61,10 @@ const Search = () => {
             <div className="search-content">
                 <h1>搜尋結果: {query}</h1>
                 {loading ? (
-                    <div className="loading">載入中...</div>
+                    <div className="loading">{t('search.loading')}</div>
                 ) : results.length === 0 ? (
                     <div className="no-results">
-                        <p>{query ? '找不到相關結果' : '請輸入搜尋關鍵字'}</p>
+                        <p>{query ? t('search.noResults') : t('search.enterKeyword')}</p>
                     </div>
                 ) : (
                     <div className="results-grid">

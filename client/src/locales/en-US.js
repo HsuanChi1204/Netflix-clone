@@ -12,7 +12,7 @@ export default {
   movie: {
     learnMore: 'Learn More',
     play: 'Play',
-    addToList: 'Add to List',
+    addToList: 'Add to My List',
     removeFromList: 'Remove from List',
     releaseYear: 'Release Year',
     rating: 'Rating',
@@ -22,20 +22,25 @@ export default {
     popularMovies: 'Popular Movies',
     trendingNow: 'Trending Now',
     topRated: 'Top Rated',
-    upcoming: 'Coming Soon',
+    upcoming: 'Upcoming',
     onlyOnNetflix: 'Only on Netflix',
-    topPicsForYou: 'Top Picks for You'
+    topPicsForYou: 'Top Picks for You',
+    moreInfo: 'More Info',
+    addedToList: 'Added to My List',
+    removedFromList: 'Removed from My List',
+    trailerNotFound: 'Trailer not found',
+    trailerError: 'Failed to load trailer'
   },
   comments: {
     title: 'Comments',
     rating: 'Rating',
     placeholder: 'Share your thoughts...',
-    submit: 'Submit Comment',
-    success: 'Comment posted successfully',
-    error: 'Failed to post comment. Please try again later',
+    submit: 'Submit',
+    submitted: 'Comment submitted successfully!',
+    error: 'Failed to submit comment. Please try again later.',
     alreadyCommented: 'You have already commented on this movie',
-    pleaseRate: 'Please select a rating',
-    pleaseComment: 'Please enter a comment'
+    ratingRequired: 'Please select a rating',
+    contentRequired: 'Please enter your comment'
   },
   auth: {
     login: 'Login',
@@ -44,8 +49,9 @@ export default {
     sessionExpired: 'Session expired, please login again'
   },
   common: {
-    error: 'An error occurred. Please try again later',
+    error: 'An error occurred. Please try again later.',
     loading: 'Loading...',
-    noResults: 'No results found'
+    noResults: 'No results found',
+    close: 'Close'
   }
 }; 

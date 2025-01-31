@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+/* eslint-disable no-unused-vars */
+import React from 'react';
+import { useState } from "react";
 import "./Login.css";
 import logo from "../../assets/logo.png";
 import netflix_spinner from "../../assets/netflix_spinner.gif";
@@ -16,6 +18,27 @@ const Login = () => {
 
   const user_auth = async (event) => {
     event.preventDefault();
+    
+    // 基本驗證
+    if (signState === "Sign Up") {
+      if (!name.trim()) {
+        toast.error('請輸入姓名');
+        return;
+      }
+    }
+    if (!email.trim()) {
+      toast.error('請輸入電子郵件');
+      return;
+    }
+    if (!password) {
+      toast.error('請輸入密碼');
+      return;
+    }
+    if (password.length < 6) {
+      toast.error('密碼至少需要6個字符');
+      return;
+    }
+    
     setLoading(true);
     try {
       if (signState === "Sign In") {
@@ -25,7 +48,6 @@ const Login = () => {
           password
         });
         
-        // 保存 token 到 localStorage
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
         
@@ -39,7 +61,6 @@ const Login = () => {
           password
         });
         
-        // 保存 token 到 localStorage
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
         
@@ -48,7 +69,21 @@ const Login = () => {
       }
     } catch (error) {
       console.error(error);
-      toast.error(error.response?.data?.message || '操作失敗，請稍後重試');
+      if (error.response) {
+        // 處理具體的錯誤消息
+        if (error.response.data.errors) {
+          // 驗證錯誤
+          const errorMessages = error.response.data.errors.map(err => err.msg);
+          errorMessages.forEach(msg => toast.error(msg));
+        } else if (error.response.data.message) {
+          // 一般錯誤消息
+          toast.error(error.response.data.message);
+        } else {
+          toast.error('操作失敗，請稍後重試');
+        }
+      } else {
+        toast.error('網絡錯誤，請檢查您的網絡連接');
+      }
     } finally {
       setLoading(false);
     }

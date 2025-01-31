@@ -7,7 +7,24 @@
 }
 
 body {
-  background-color: black;
-  color: white;
-  font-family: "poppins";
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #141414;
+  color: #fff;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* 為有 Navbar 的頁面添加上邊距 */
+.page-container {
+  padding-top: 70px; /* 與 Navbar 高度相同 */
+  min-height: 100vh;
+  background-color: #141414;
 }

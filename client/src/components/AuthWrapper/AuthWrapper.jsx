@@ -1,8 +1,11 @@
-import React, { useEffect } from 'react';
+/* eslint-disable no-unused-vars */
+import React from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import axios from 'axios';
 
-export const AuthWrapper = ({ children }) => {
+const AuthWrapper = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,4 +25,10 @@ export const AuthWrapper = ({ children }) => {
   }, [navigate]);
 
   return children;
-}; 
+};
+
+AuthWrapper.propTypes = {
+  children: PropTypes.node.isRequired
+};
+
+export default AuthWrapper;

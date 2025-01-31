@@ -24,18 +24,23 @@ export default {
     topRated: '最高評分',
     upcoming: '即將上映',
     onlyOnNetflix: 'Netflix 獨家',
-    topPicsForYou: '為您推薦'
+    topPicsForYou: '為您推薦',
+    moreInfo: '更多資訊',
+    addedToList: '已加入我的片單',
+    removedFromList: '已從片單移除',
+    trailerNotFound: '找不到預告片',
+    trailerError: '預告片載入失敗'
   },
   comments: {
     title: '觀眾評論',
     rating: '評分',
     placeholder: '分享你的想法...',
     submit: '發布評論',
-    success: '評論發布成功',
+    submitted: '評論發布成功！',
     error: '發布評論失敗，請稍後重試',
     alreadyCommented: '您已經評論過這部電影了',
-    pleaseRate: '請選擇評分',
-    pleaseComment: '請輸入評論內容'
+    ratingRequired: '請選擇評分',
+    contentRequired: '請輸入評論內容'
   },
   auth: {
     login: '登入',
@@ -46,6 +51,7 @@ export default {
   common: {
     error: '發生錯誤，請稍後重試',
     loading: '載入中...',
-    noResults: '沒有找到相關結果'
+    noResults: '沒有找到相關結果',
+    close: '關閉'
   }
 }; 

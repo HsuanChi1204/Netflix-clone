@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React from "react";
 import "./Home.css";
 import Navbar from "../../components/Navbar/Navbar";
@@ -27,14 +28,14 @@ const Home = () => {
           <div className="hero-btns">
             <button className="btn">
               <img src={play_icon} alt="" />
-              Play
+              {t('movie.play')}
             </button>
             <button className="btn dark-btn">
               <img src={info_icon} alt="" />
-              More Info
+              {t('movie.moreInfo')}
             </button>
           </div>
-          <TitleCards />
+          <TitleCards category="popular" />
         </div>
       </div>
       <div className="more-cards">

@@ -15,7 +15,7 @@
   display: flex;
   overflow-x: auto;
   scroll-behavior: smooth;
-  gap: 0.5rem;
+  gap: 1rem;
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
@@ -186,12 +186,50 @@
   margin-bottom: 1.5rem;
 }
 
-.modal-buttons {
-  display: flex;
-  gap: 1rem;
+.modal-description {
+  margin-bottom: 20px;
 }
 
-/* 遮罩效果 */
+.modal-buttons {
+  margin-top: 24px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 16px;
+}
+
+.modal-buttons .play-button,
+.modal-buttons .favorite-button-large {
+  padding: 12px 24px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-buttons .play-button {
+  background-color: #e50914;
+  color: white;
+  border: none;
+  text-decoration: none;
+}
+
+.modal-buttons .favorite-button-large {
+  background-color: rgba(109, 109, 110, 0.7);
+  color: white;
+  border: 1px solid white;
+}
+
+.modal-buttons .play-button:hover {
+  background-color: #f40612;
+}
+
+.modal-buttons .favorite-button-large:hover {
+  background-color: rgba(109, 109, 110, 0.9);
+}
+
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -205,6 +243,22 @@
 
 .modal-overlay.active {
   display: block;
+}
+
+.modal-trailer,
+.modal-image {
+  width: 100%;
+  height: 300px;
+  margin-bottom: 1.5rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.modal-trailer iframe,
+.modal-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* 響應式設計 */
@@ -233,23 +287,6 @@
   .modal-content {
     padding: 1rem;
   }
-}
-
-/* 模態框樣式更新 */
-.modal-trailer,
-.modal-image {
-  width: 100%;
-  height: 300px;
-  margin-bottom: 1.5rem;
-  border-radius: 0.5rem;
-  overflow: hidden;
-}
-
-.modal-trailer iframe,
-.modal-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
 }
 
 .play-button,
@@ -292,41 +329,69 @@
 /* 評論區樣式 */
 .modal-comments {
   margin-top: 2rem;
-  max-height: 400px;
-  overflow-y: auto;
-  padding-right: 1rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.modal-comments::-webkit-scrollbar {
-  width: 8px;
-}
-
-.modal-comments::-webkit-scrollbar-track {
-  background: #2f2f2f;
-  border-radius: 4px;
-}
-
-.modal-comments::-webkit-scrollbar-thumb {
-  background: #666;
-  border-radius: 4px;
-}
-
-.modal-comments::-webkit-scrollbar-thumb:hover {
-  background: #888;
+.modal-comments h4 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #fff;
 }
 
 .comment-form {
   margin-bottom: 2rem;
-  padding: 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 0.5rem;
 }
 
 .rating-input {
-  margin-bottom: 1rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.star-icon {
+  font-size: 1.5rem;
+  color: #ffd700;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.star-icon:hover {
+  transform: scale(1.2);
+}
+
+.comment-form textarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.8rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.3rem;
+  color: #fff;
+  font-size: 0.9rem;
+  resize: vertical;
+  margin-bottom: 1rem;
+}
+
+.comment-form textarea:focus {
+  outline: none;
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.comment-submit {
+  background-color: #e50914;
+  color: #fff;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.3s ease;
+}
+
+.comment-submit:hover {
+  background-color: #f40612;
 }
 
 .comments-list {
@@ -336,20 +401,31 @@
 }
 
 .comment-item {
-  padding: 1rem;
   background: rgba(255, 255, 255, 0.05);
-  border-radius: 0.5rem;
+  padding: 1rem;
+  border-radius: 0.3rem;
 }
 
 .comment-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 0.5rem;
+}
+
+.comment-user {
+  font-weight: bold;
+  color: #fff;
+}
+
+.comment-time {
+  font-size: 0.8rem;
   color: #999;
-  font-size: 0.9rem;
 }
 
 .comment-rating {
+  display: flex;
+  gap: 0.2rem;
   margin-bottom: 0.5rem;
 }
 
@@ -358,48 +434,97 @@
   line-height: 1.4;
 }
 
-.star-icon {
-  color: #ffd700;
-  font-size: 1.2rem;
+.loading-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
 }
 
-.comment-submit {
-  background: #e50914;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #e50914;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.skeleton-card {
+  width: 230px;
+  height: 130px;
+  background: linear-gradient(90deg, #2a2a2a 25%, #3a3a3a 50%, #2a2a2a 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
   border-radius: 0.3rem;
-  cursor: pointer;
-  margin-top: 0.5rem;
+  margin-right: 1rem;
 }
 
-.comment-submit:hover {
-  background: #f40612;
+.loading-skeleton {
+  padding: 0 4%;
+  display: flex;
+  overflow-x: hidden;
 }
 
-textarea {
-  width: 100%;
-  min-height: 80px;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid #333;
-  border-radius: 0.3rem;
-  color: white;
-  padding: 0.5rem;
-  resize: vertical;
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
-textarea:focus {
-  outline: none;
-  border-color: #666;
+@media (max-width: 800px) {
+  .title-cards {
+    margin: 2rem 0;
+  }
+
+  .card {
+    min-width: 200px;
+  }
+
+  .movie-modal {
+    width: 90%;
+  }
+
+  .modal-content {
+    padding: 1rem;
+  }
+
+  .modal-trailer,
+  .modal-image {
+    height: 200px;
+  }
+
+  .comment-form textarea {
+    min-height: 80px;
+  }
 }
 
-/* 調整模態框整體高度 */
-.movie-modal {
-  max-height: 80vh;
-  overflow-y: auto;
-}
+@media (max-width: 500px) {
+  .title-cards h2 {
+    font-size: 1.2rem;
+  }
 
-.modal-trailer,
-.modal-image {
-  height: 300px;
+  .card {
+    min-width: 160px;
+  }
+
+  .modal-content {
+    padding: 1rem;
+  }
+
+  .modal-trailer,
+  .modal-image {
+    height: 200px;
+  }
+
+  .comment-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
 }

@@ -1,3 +1,10 @@
+.home {
+  width: 100%;
+  position: relative;
+  background-color: #141414;
+  min-height: 100vh;
+}
+
 .hero {
   position: relative;
 }
@@ -5,7 +12,7 @@
 .banner-img {
   width: 100%;
   mask-image: linear-gradient(to right, transparent, black 75%);
-  -weblit-mask-image: linear-gradient(to right, transparent, black 75%);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 75%);
 }
 
 .hero-caption {
@@ -25,6 +32,7 @@
   max-width: 700px;
   font-size: 17px;
   margin-bottom: 20px;
+  color: white;
 }
 
 .hero-btns {
@@ -98,7 +106,7 @@
 }
 
 @media (max-width: 500px) {
-  .caption img {
+  .caption-img {
     display: none;
   }
   .hero-btns .btn img {
@@ -107,6 +115,6 @@
   .hero-btns .btn {
     padding: 4px 10px;
     gap: 5px;
-    font-size: 10ox;
+    font-size: 10px;
   }
 }

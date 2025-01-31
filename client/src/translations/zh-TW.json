@@ -1,0 +1,50 @@
+{
+    "auth": {
+        "login": "登入",
+        "register": "註冊",
+        "logout": "登出",
+        "email": "電子郵件",
+        "password": "密碼",
+        "name": "姓名",
+        "loginSuccess": "登入成功",
+        "registerSuccess": "註冊成功",
+        "sessionExpired": "登入已過期，請重新登入",
+        "invalidCredentials": "帳號或密碼錯誤"
+    },
+    "navbar": {
+        "home": "首頁",
+        "myList": "我的片單",
+        "search": "搜尋",
+        "searchPlaceholder": "搜尋電影..."
+    },
+    "movie": {
+        "play": "播放",
+        "addToList": "加入片單",
+        "removeFromList": "從片單移除",
+        "addedToList": "已加入片單",
+        "removedFromList": "已從片單移除",
+        "learnMore": "更多資訊",
+        "releaseYear": "上映年份",
+        "popularMovies": "熱門電影",
+        "trailerNotFound": "找不到預告片",
+        "trailerError": "載入預告片時發生錯誤"
+    },
+    "myList": {
+        "empty": "您的片單目前是空的"
+    },
+    "comments": {
+        "title": "評論",
+        "rating": "評分",
+        "placeholder": "寫下您的評論...",
+        "submit": "發表評論",
+        "addSuccess": "評論發表成功",
+        "addError": "發表評論失敗",
+        "fetchError": "載入評論失敗",
+        "ratingRequired": "請選擇評分",
+        "contentRequired": "請輸入評論內容"
+    },
+    "common": {
+        "loading": "載入中...",
+        "error": "操作失敗，請稍後重試"
+    }
+} 
