@@ -287,7 +287,7 @@ const MyList = () => {
                                 key={favorite.movieId} 
                                 className="favorite-item"
                             >
-                                <Link to={`/player/${favorite.movieId}`}>
+                                <Link to={`/player/${favorite.movieId}`} data-testid={`movie-link-${favorite.movieId}`}>
                                     <img
                                         src={`https://image.tmdb.org/t/p/w500${favorite.posterPath}`}
                                         alt={favorite.title}
@@ -304,6 +304,7 @@ const MyList = () => {
                                 </button>
                                 <button
                                     className="favorite-button"
+                                    data-testid="favorite-button"
                                     onClick={(e) => handleRemoveFavorite(e, favorite.movieId)}
                                 >
                                     <AiFillHeart className="heart-icon" />

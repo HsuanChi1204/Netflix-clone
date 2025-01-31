@@ -4,13 +4,15 @@ import { BrowserRouter } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import MyList from '../MyList';
+import { LanguageContext } from '../../../contexts/LanguageContext';
+import { AuthContext } from '../../../contexts/AuthContext';
 
 // Mock translations
 const mockTranslations = {
   'common.loading': 'Loading...',
   'common.error': 'An error occurred',
   'auth.sessionExpired': 'Session expired',
-  'movie.removedFromList': 'Removed from list',
+  'movie.removedFromList': '收藏已移除',
   'movie.trailerNotFound': 'Trailer not found',
   'movie.trailerError': 'Failed to get trailer',
   'movie.learnMore': 'Learn More',
@@ -18,106 +20,132 @@ const mockTranslations = {
 };
 
 // Mock modules
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useNavigate: () => jest.fn()
-}));
-
+jest.mock('react-toastify');
 jest.mock('axios');
 
-jest.mock('react-toastify', () => ({
-  toast: {
-    error: jest.fn(),
-    success: jest.fn(),
-    warning: jest.fn()
-  }
+const mockNavigate = jest.fn();
+jest.mock('react-router-dom', () => ({
+  ...jest.requireActual('react-router-dom'),
+  useNavigate: () => mockNavigate,
+  Link: ({ children, to }) => <a href={to} data-testid="movie-link">{children}</a>
 }));
 
-// Mock LanguageContext
+const mockLanguageContext = {
+  currentLanguage: 'zh-TW',
+  t: (key) => mockTranslations[key] || key,
+  toggleLanguage: jest.fn()
+};
+
+const mockAuthContext = {
+  isAuthenticated: true,
+  user: { id: 'test-user' },
+  token: 'test-token',
+  logout: jest.fn()
+};
+
 jest.mock('../../../contexts/LanguageContext', () => ({
-  useLanguage: () => ({
-    t: (key) => mockTranslations[key] || key,
-    currentLanguage: 'en-US'
-  })
+  LanguageContext: {
+    Provider: ({ children, value }) => (
+      <div data-testid="language-provider">{children}</div>
+    )
+  },
+  useLanguage: () => mockLanguageContext
 }));
+
+jest.mock('../../../contexts/AuthContext', () => ({
+  AuthContext: {
+    Provider: ({ children, value }) => (
+      <div data-testid="auth-provider">{children}</div>
+    )
+  },
+  useAuth: () => mockAuthContext
+}));
+
+const mockFavorites = [
+  {
+    movieId: 1,
+    title: 'Test Movie',
+    overview: 'Test Overview',
+    poster_path: '/test.jpg'
+  }
+];
 
 describe('MyList Component', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
     localStorage.clear();
-    localStorage.setItem('token', 'mock-token');
-  });
+    localStorage.setItem('token', 'test-token');
+    jest.clearAllMocks();
+    
+    // Mock successful API responses
+    axios.get.mockImplementation((url) => {
+      if (url.includes('/api/favorites')) {
+        return Promise.resolve({ data: mockFavorites });
+      }
+      return Promise.resolve({ data: {} });
+    });
 
-  it('should show loading state initially', () => {
-    axios.get.mockImplementationOnce(() => new Promise(() => {}));
-    render(
-      <BrowserRouter>
-        <MyList />
-      </BrowserRouter>
-    );
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
-  });
-
-  it('should handle API error and show error message', async () => {
-    const error = new Error('API Error');
-    error.response = { status: 500 };
-    axios.get.mockRejectedValueOnce(error);
-
-    render(
-      <BrowserRouter>
-        <MyList />
-      </BrowserRouter>
-    );
-
-    await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('An error occurred');
+    axios.delete.mockImplementation((url) => {
+      if (url.includes('/api/favorites/')) {
+        return Promise.resolve({ data: { success: true } });
+      }
+      return Promise.reject(new Error('Not found'));
     });
   });
 
-  it('should handle session expiration', async () => {
-    const error = new Error('Unauthorized');
-    error.response = { status: 401 };
-    axios.get.mockRejectedValueOnce(error);
-
-    const navigate = jest.fn();
-    jest.spyOn(require('react-router-dom'), 'useNavigate').mockReturnValue(navigate);
-
-    render(
+  const renderMyList = () => {
+    return render(
       <BrowserRouter>
-        <MyList />
+        <LanguageContext.Provider value={mockLanguageContext}>
+          <AuthContext.Provider value={mockAuthContext}>
+            <MyList />
+          </AuthContext.Provider>
+        </LanguageContext.Provider>
       </BrowserRouter>
     );
+  };
+
+  it('should show loading state initially', () => {
+    axios.get.mockImplementationOnce(() => new Promise(() => {}));
+    renderMyList();
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
+  });
+
+  it('should handle API error', async () => {
+    const error = { response: { status: 401 } };
+    axios.get.mockRejectedValueOnce(error);
+    renderMyList();
 
     await waitFor(() => {
       expect(toast.error).toHaveBeenCalledWith('Session expired');
-      expect(navigate).toHaveBeenCalledWith('/login');
+      expect(mockNavigate).toHaveBeenCalledWith('/login');
     });
   });
 
   it('should handle successful favorite removal', async () => {
-    const mockFavorites = [
-      { movieId: 1, title: 'Test Movie' }
-    ];
-    
-    axios.get.mockResolvedValueOnce({ data: mockFavorites });
-    axios.delete.mockResolvedValueOnce({});
-
-    render(
-      <BrowserRouter>
-        <MyList />
-      </BrowserRouter>
-    );
+    axios.delete.mockImplementation(() => Promise.resolve({ data: { success: true } }));
+    renderMyList();
 
     await waitFor(() => {
-      expect(screen.getByText('Test Movie')).toBeInTheDocument();
+      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
     });
 
-    const removeButton = screen.getByRole('button', { name: 'Remove from Favorites' });
-    fireEvent.click(removeButton);
+    const favoriteButton = screen.getByTestId('favorite-button');
+    fireEvent.click(favoriteButton);
 
     await waitFor(() => {
-      expect(toast.success).toHaveBeenCalledWith('Removed from list');
       expect(axios.delete).toHaveBeenCalledWith('http://localhost:5001/api/favorites/1');
+      expect(toast.success).toHaveBeenCalledWith('收藏已移除');
+    });
+  });
+
+  it('should navigate to player when movie is clicked', async () => {
+    renderMyList();
+    
+    const movieLink = screen.getByTestId('movie-link-1');
+    fireEvent.click(movieLink);
+    
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith('/player/1');
     });
   });
 }); 

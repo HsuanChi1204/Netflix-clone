@@ -92,12 +92,12 @@ const Navbar = () => {
   return (
     <div className="navbar" ref={navRef}>
       <div className="navbar-left">
-        <Link to="/">
+        <Link to="/" data-testid="nav-logo">
           <img src={logo} alt="netflix logo" />
         </Link>
         <ul>
           <li>
-            <Link to="/" className={location.pathname === '/' ? 'active' : ''}>
+            <Link to="/" className={location.pathname === '/' ? 'active' : ''} data-testid="nav-home">
               {t('navbar.home')}
             </Link>
           </li>
@@ -114,7 +114,7 @@ const Navbar = () => {
       </div>
       <div className="navbar-right">
         <div className={`search-container ${showSearch ? 'active' : ''}`}>
-          <button className="search-icon" onClick={toggleSearch}>
+          <button className="search-icon" data-testid="search-button" onClick={toggleSearch}>
             <AiOutlineSearch />
           </button>
           {showSearch && (

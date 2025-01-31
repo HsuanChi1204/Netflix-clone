@@ -9,40 +9,55 @@ import info_icon from "../../assets/info_icon.png";
 import TitleCards from "../../components/TitleCards/TitleCards";
 import Footer from "../../components/Footer/Footer";
 import { useLanguage } from '../../contexts/LanguageContext';
+import { useNavigate } from 'react-router-dom';
+import { BsFillPlayFill } from 'react-icons/bs';
 
 const Home = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate();
+
+  const handlePlayClick = () => {
+    // Implementation of handlePlayClick function
+  };
 
   return (
     <div className="home">
       <Navbar />
-      <div className="hero">
-        <img src={hero_banner} alt="" className="banner-img" />
-        <div className="hero-caption">
-          <img src={hero_title} alt="" className="caption-img" />
-          <p>
-            Displaying his ties to a secret ancient order, a young man living in
-            modern Istanbul embarks on a quest to save the city from an importal
-            enemy.
-          </p>
+      <div className="hero" data-testid="hero-section">
+        <img
+          src={hero_banner}
+          alt=""
+          className="banner-img"
+          data-testid="hero-banner"
+        />
+        <div className="hero-caption" data-testid="hero-caption">
+          <img
+            src={hero_title}
+            alt=""
+            className="caption-img"
+          />
+          <p>{t('home.hero.description')}</p>
           <div className="hero-btns">
-            <button className="btn">
-              <img src={play_icon} alt="" />
-              {t('movie.play')}
+            <button 
+              className="btn" 
+              data-testid="play-button"
+              onClick={() => navigate('/player/1')}
+            >
+              <BsFillPlayFill />
+              {t('home.play')}
             </button>
             <button className="btn dark-btn">
               <img src={info_icon} alt="" />
-              {t('movie.moreInfo')}
+              {t('common.moreInfo')}
             </button>
           </div>
-          <TitleCards category="popular" />
+          <TitleCards category="popular" title={t('home.categories.popular')} />
         </div>
       </div>
       <div className="more-cards">
-        <TitleCards title={t('movie.topRated')} category="top_rated" />
-        <TitleCards title={t('movie.onlyOnNetflix')} category="popular" />
-        <TitleCards title={t('movie.upcoming')} category="upcoming" />
-        <TitleCards title={t('movie.topPicsForYou')} category="now_playing" />
+        <TitleCards category="top_rated" title={t('home.categories.topRated')} />
+        <TitleCards category="upcoming" title={t('home.categories.upcoming')} />
+        <TitleCards category="now_playing" title={t('home.categories.nowPlaying')} />
       </div>
       <Footer />
     </div>
