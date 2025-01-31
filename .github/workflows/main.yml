@@ -97,7 +97,7 @@ jobs:
       run: npm install --global vercel@latest
 
     - name: Pull Vercel Environment Information
-      run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} --name netflix-clone
 
     - name: Build Client
       run: |
@@ -110,7 +110,7 @@ jobs:
     - name: Deploy Client to Vercel
       run: |
         cd client
-        vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
+        vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --name netflix-clone
 
     # Deploy Backend to Railway
     - name: Install Railway CLI
