@@ -114,15 +114,4 @@ jobs:
         cd client
         vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }}
 
-    # Deploy Backend to Railway
-    - name: Install Railway CLI
-      run: npm i -g @railway/cli
-
-    - name: Deploy Server to Railway
-      run: |
-        cd server
-        railway link --project ${{ secrets.RAILWAY_PROJECT_ID }}
-        railway up --service ${{ secrets.RAILWAY_SERVICE_NAME }}
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        CI: true 
+    # Railway deployment section removed 
