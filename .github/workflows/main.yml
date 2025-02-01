@@ -121,7 +121,7 @@ jobs:
     - name: Deploy Server to Railway
       run: |
         cd server
-        railway up --project=${{ secrets.RAILWAY_PROJECT_ID }}
+        railway up -- --project ${{ secrets.RAILWAY_PROJECT_ID }}
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         CI: true 
