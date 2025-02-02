@@ -37,22 +37,31 @@ const TitleCards = ({ title = '', category }) => {
 		},
 	}), []);
 
-	const checkFavoriteStatus = useCallback(async (movieId) => {
+	const fetchFavorites = useCallback(async () => {
+		if (!isAuthenticated) return;
+		
 		try {
 			const token = localStorage.getItem('token');
-			const response = await axios.get(`/api/favorites/check/${movieId}`, {
+			const response = await axios.get('/api/favorites', {
 				headers: {
 					Authorization: `Bearer ${token}`
 				}
 			});
-			setFavorites(prev => ({
-				...prev,
-				[movieId]: response.data.isFavorite
-			}));
+			
+			// 將收藏資料轉換為 map 格式
+			const newFavorites = {};
+			response.data.forEach(favorite => {
+				newFavorites[favorite.movieId] = true;
+			});
+			setFavorites(newFavorites);
 		} catch (error) {
-			console.error('檢查收藏狀態失敗:', error);
+			console.error('獲取收藏清單失敗:', error);
 		}
-	}, []);
+	}, [isAuthenticated]);
+
+	useEffect(() => {
+		fetchFavorites();
+	}, [fetchFavorites, isAuthenticated]);
 
 	const fetchData = useCallback(async (pageNumber = 1) => {
 		try {
@@ -72,12 +81,6 @@ const TitleCards = ({ title = '', category }) => {
 			}
 			
 			setHasMore(responseData.page < (responseData.total_pages || 1));
-			
-			if (results.length > 0) {
-				results.forEach(movie => {
-					checkFavoriteStatus(movie.id);
-				});
-			}
 		} catch (err) {
 			console.error(err);
 			toast.error(t('common.error'));
@@ -85,64 +88,76 @@ const TitleCards = ({ title = '', category }) => {
 		} finally {
 			setLoading(false);
 		}
-	}, [category, currentLanguage, t, options, checkFavoriteStatus]);
+	}, [category, currentLanguage, options, t]);
 
 	useEffect(() => {
 		fetchData();
 	}, [fetchData]);
 
 	const handleWheel = useCallback((event) => {
-		event.preventDefault();
-		cardsRef.current.scrollLeft += event.deltaY;
+		const delta = event.deltaY;
+		if (cardsRef.current) {
+			cardsRef.current.scrollLeft += delta;
+		}
 	}, []);
 
 	const toggleFavorite = async (event, movie) => {
 		event.preventDefault();
 		event.stopPropagation();
 
+		const token = localStorage.getItem('token');
+		if (!token) {
+			toast.error(t('auth.loginRequired'));
+			navigate('/login');
+			return;
+		}
+
 		try {
-			const token = localStorage.getItem('token');
-			if (!token) {
-				toast.error(t('auth.sessionExpired'));
-				navigate('/login');
-				return;
-			}
+			const movieId = movie.id.toString();
+			const isFavorited = favorites[movieId];
 
-			const config = {
-				headers: {
-					Authorization: `Bearer ${token}`
-				}
-			};
-
-			if (favorites[movie.id]) {
-				await axios.delete(`/api/favorites/${movie.id}`, config);
-				setFavorites(prev => ({
-					...prev,
-					[movie.id]: false
-				}));
+			if (isFavorited) {
+				// 取消收藏
+				await axios.delete(`/api/favorites/${movieId}`, {
+					headers: { Authorization: `Bearer ${token}` }
+				});
+				
+				setFavorites(prev => {
+					const newFavorites = { ...prev };
+					delete newFavorites[movieId];
+					return newFavorites;
+				});
+				
 				toast.success(t('movie.removedFromList'));
 			} else {
+				// 新增收藏
 				const movieData = {
-					movieId: movie.id.toString(),
+					movieId,
 					title: movie.title,
 					posterPath: movie.poster_path || movie.backdrop_path,
 					mediaType: 'movie'
 				};
 				
-				await axios.post('/api/favorites', movieData, config);
+				await axios.post('/api/favorites', movieData, {
+					headers: { Authorization: `Bearer ${token}` }
+				});
+				
 				setFavorites(prev => ({
 					...prev,
-					[movie.id]: true
+					[movieId]: true
 				}));
+				
 				toast.success(t('movie.addedToList'));
 			}
 		} catch (error) {
+			console.error('收藏操作失敗:', error);
 			if (error.response?.status === 401) {
+				localStorage.removeItem('token');
+				localStorage.removeItem('user');
 				toast.error(t('auth.sessionExpired'));
 				navigate('/login');
 			} else {
-				console.error('收藏操作失敗:', error);
-				toast.error(error.response?.data?.message || t('common.error'));
+				toast.error(t('common.error'));
 			}
 		}
 	};
@@ -408,7 +423,7 @@ const TitleCards = ({ title = '', category }) => {
 								className="favorite-button"
 								onClick={(e) => toggleFavorite(e, movie)}
 							>
-								{favorites[movie.id] ? (
+								{favorites[movie.id.toString()] ? (
 									<AiFillHeart className="heart-icon" />
 								) : (
 									<AiOutlineHeart className="heart-icon" />
@@ -470,12 +485,12 @@ const TitleCards = ({ title = '', category }) => {
 											className="favorite-button-large"
 											onClick={(e) => toggleFavorite(e, selectedMovie)}
 										>
-											{favorites[selectedMovie.id] ? (
+											{favorites[selectedMovie.id.toString()] ? (
 												<AiFillHeart className="heart-icon" />
 											) : (
 												<AiOutlineHeart className="heart-icon" />
 											)}
-											{favorites[selectedMovie.id] ? t('movie.removeFromList') : t('movie.addToList')}
+											{favorites[selectedMovie.id.toString()] ? t('movie.removeFromList') : t('movie.addToList')}
 										</button>
 									</div>
 									<div className="modal-comments">

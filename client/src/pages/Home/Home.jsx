@@ -44,7 +44,7 @@ const Home = () => {
               onClick={() => navigate('/player/1')}
             >
               <BsFillPlayFill />
-              {t('home.play')}
+              {t('home.hero.play')}
             </button>
             <button className="btn dark-btn">
               <img src={info_icon} alt="" />

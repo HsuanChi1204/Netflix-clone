@@ -20,14 +20,17 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
       try {
         const token = localStorage.getItem('token');
-        if (token) {
+        const storedUser = localStorage.getItem('user');
+        
+        if (token && storedUser) {
           axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          const response = await axios.get('/api/auth/verify');
-          setUser(response.data.user);
+          setUser(JSON.parse(storedUser));
           setIsAuthenticated(true);
         }
       } catch (error) {
+        console.error('Auth check error:', error);
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         delete axios.defaults.headers.common['Authorization'];
         setUser(null);
         setIsAuthenticated(false);
@@ -42,10 +45,11 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await axios.post('/api/auth/login', { email, password });
-      const token = response.data.token;
+      const { token, user } = response.data;
       localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setUser(response.data.user);
+      setUser(user);
       setIsAuthenticated(true);
       return response.data;
     } catch (error) {
@@ -56,10 +60,11 @@ export const AuthProvider = ({ children }) => {
   const register = async (email, password, name) => {
     try {
       const response = await axios.post('/api/auth/register', { email, password, name });
-      const token = response.data.token;
+      const { token, user } = response.data;
       localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      setUser(response.data.user);
+      setUser(user);
       setIsAuthenticated(true);
       return response.data;
     } catch (error) {
@@ -69,6 +74,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     delete axios.defaults.headers.common['Authorization'];
     setUser(null);
     setIsAuthenticated(false);

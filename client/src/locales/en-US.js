@@ -9,6 +9,21 @@ export default {
     trending: 'Trending',
     browseByLanguage: 'Browse by Language'
   },
+  home: {
+    hero: {
+      description: 'Watch the latest and most popular movies and TV shows. Anytime, anywhere.',
+      play: 'Play Now',
+      moreInfo: 'More Info'
+    },
+    categories: {
+      trending: 'Trending',
+      popular: 'Popular',
+      topRated: 'Top Rated',
+      upcoming: 'Upcoming',
+      nowPlaying: 'Now Playing',
+      netflix: 'Netflix Originals'
+    }
+  },
   movie: {
     learnMore: 'Learn More',
     play: 'Play',
@@ -45,13 +60,33 @@ export default {
   auth: {
     login: 'Login',
     logout: 'Logout',
+    register: 'Register',
+    email: 'Email',
+    password: 'Password',
+    name: 'Name',
+    signIn: 'Sign In',
+    signUp: 'Sign Up',
+    switchToSignUp: "Don't have an account? Sign Up",
+    switchToSignIn: 'Already have an account? Sign In',
     pleaseLogin: 'Please login first',
-    sessionExpired: 'Session expired, please login again'
+    sessionExpired: 'Session expired, please login again',
+    loginSuccess: 'Login successful!',
+    registerSuccess: 'Registration successful!',
+    emailRequired: 'Please enter your email',
+    passwordRequired: 'Please enter your password',
+    nameRequired: 'Please enter your name',
+    passwordLength: 'Password must be at least 6 characters',
+    networkError: 'Network error, please check your connection',
+    operationFailed: 'Operation failed, please try again later',
+    rememberMe: 'Remember Me',
+    needHelp: 'Need Help?'
   },
   common: {
     error: 'An error occurred. Please try again later.',
     loading: 'Loading...',
     noResults: 'No results found',
-    close: 'Close'
+    close: 'Close',
+    moreInfo: 'More Info',
+    play: 'Play'
   }
 }; 

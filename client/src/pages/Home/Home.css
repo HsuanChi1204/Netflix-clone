@@ -59,6 +59,12 @@
   cursor: pointer;
 }
 
+/* 添加播放按鈕 icon 的樣式 */
+.hero-btns .btn svg {
+  font-size: 24px; /* 調整 icon 大小 */
+  margin-right: 5px;
+}
+
 .hero-btns .btn.dark-btn {
   color: #fff;
   background: #6d6d6eb3;
@@ -100,6 +106,9 @@
   .hero-btns .btn img {
     width: 20px;
   }
+  .hero-btns .btn svg {
+    font-size: 20px; /* 中等螢幕時的 icon 大小 */
+  }
   .more-cards {
     padding-left: 4%;
   }
@@ -111,6 +120,9 @@
   }
   .hero-btns .btn img {
     width: 15px;
+  }
+  .hero-btns .btn svg {
+    font-size: 16px; /* 小螢幕時的 icon 大小 */
   }
   .hero-btns .btn {
     padding: 4px 10px;

@@ -104,7 +104,7 @@
   right: 0.5rem;
   background: none;
   border: none;
-  color: white;
+  color: rgb(255, 255, 255);
   cursor: pointer;
   padding: 0.5rem;
   z-index: 3;
@@ -112,15 +112,39 @@
 
 .heart-icon {
   font-size: 1.5rem;
-  transition: transform 0.2s ease;
+  color: rgb(206, 49, 49);
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
 }
 
 .heart-icon:hover {
   transform: scale(1.2);
+  color: rgb(255, 255, 255);
 }
 
-.heart-icon.filled {
+/* .heart-icon {
+  font-size: 1.5rem;
+  color: rgb(208, 55, 55);
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+} */
+
+
+
+.favorite-button:hover .heart-icon {
+  transform: scale(1.2);
+}
+
+.favorite-button:hover .heart-icon[class*="AiFillHeart"] {
+  color: #ff0f1b;
+}
+
+/* 被收藏時的愛心顏色 */
+.favorite-button .heart-icon[class*="AiFillHeart"],
+.favorite-button-large .heart-icon[class*="AiFillHeart"] {
   color: #e50914;
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 3px rgba(229, 9, 20, 0.5));
 }
 
 /* 詳細資訊模態框 */
@@ -179,6 +203,12 @@
   gap: 1rem;
   margin-bottom: 1rem;
   color: #999;
+  align-items: center;
+}
+
+.modal-details span {
+  display: inline-block;
+  line-height: 1.5;
 }
 
 .modal-overview {

@@ -105,6 +105,26 @@
   width: 60px;
 }
 
+.form-switch p {
+  color: #737373;
+  font-size: 16px;
+  margin-top: 16px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.form-switch p:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.form-switch p span {
+  color: #fff;
+  font-weight: 600;
+  margin-left: 5px;
+}
+
 @media (max-width: 500px) {
   .login {
     padding: 15px 5%;

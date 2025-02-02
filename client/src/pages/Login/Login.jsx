@@ -7,14 +7,16 @@ import netflix_spinner from "../../assets/netflix_spinner.gif";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useLanguage } from "../../contexts/LanguageContext";
 
 const Login = () => {
   const navigate = useNavigate();
   const [signState, setSignState] = useState("Sign In");
+  const [loading, setLoading] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const { t } = useLanguage();
 
   const user_auth = async (event) => {
     event.preventDefault();
@@ -22,20 +24,20 @@ const Login = () => {
     // 基本驗證
     if (signState === "Sign Up") {
       if (!name.trim()) {
-        toast.error('請輸入姓名');
+        toast.error(t('auth.nameRequired'));
         return;
       }
     }
     if (!email.trim()) {
-      toast.error('請輸入電子郵件');
+      toast.error(t('auth.emailRequired'));
       return;
     }
     if (!password) {
-      toast.error('請輸入密碼');
+      toast.error(t('auth.passwordRequired'));
       return;
     }
     if (password.length < 6) {
-      toast.error('密碼至少需要6個字符');
+      toast.error(t('auth.passwordLength'));
       return;
     }
     
@@ -51,7 +53,7 @@ const Login = () => {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
         
-        toast.success('登錄成功！');
+        toast.success(t('auth.loginSuccess'));
         navigate('/');
       } else {
         // 註冊
@@ -64,25 +66,22 @@ const Login = () => {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
         
-        toast.success('註冊成功！');
+        toast.success(t('auth.registerSuccess'));
         navigate('/');
       }
     } catch (error) {
       console.error(error);
       if (error.response) {
-        // 處理具體的錯誤消息
         if (error.response.data.errors) {
-          // 驗證錯誤
           const errorMessages = error.response.data.errors.map(err => err.msg);
           errorMessages.forEach(msg => toast.error(msg));
         } else if (error.response.data.message) {
-          // 一般錯誤消息
           toast.error(error.response.data.message);
         } else {
-          toast.error('操作失敗，請稍後重試');
+          toast.error(t('auth.operationFailed'));
         }
       } else {
-        toast.error('網絡錯誤，請檢查您的網絡連接');
+        toast.error(t('auth.networkError'));
       }
     } finally {
       setLoading(false);
@@ -97,54 +96,59 @@ const Login = () => {
     <div className="login">
       <img src={logo} className="login-logo" alt="" />
       <div className="login-form">
-        <h1>{signState}</h1>
-        <form>
-          {signState === "Sign Up" ? (
+        <h1>{signState === "Sign In" ? t('auth.signIn') : t('auth.signUp')}</h1>
+        <form onSubmit={user_auth}>
+          {signState === "Sign Up" && (
+            <div className="input_box">
+              <input
+                type="text"
+                placeholder={t('auth.name')}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+          )}
+          <div className="input_box">
             <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              type="text"
-              placeholder="Your Name"
+              type="email"
+              placeholder={t('auth.email')}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-          ) : null}
-
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            type="email"
-            placeholder="Email"
-          />
-          <input
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            type="password"
-            placeholder="Password"
-          />
-          <button onClick={user_auth} type="submit">
-            {signState}
+          </div>
+          <div className="input_box">
+            <input
+              type="password"
+              placeholder={t('auth.password')}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <button type="submit" disabled={loading}>
+            {loading ? (
+              <img src={netflix_spinner} alt="" />
+            ) : signState === "Sign In" ? (
+              t('auth.signIn')
+            ) : (
+              t('auth.signUp')
+            )}
           </button>
           <div className="form-help">
             <div className="remember">
               <input type="checkbox" />
-              <label htmlFor="">Remember Me</label>
+              <label>{t('auth.rememberMe')}</label>
             </div>
-            <p>Need Help?</p>
+            <p>{t('auth.needHelp')}</p>
           </div>
         </form>
         <div className="form-switch">
           {signState === "Sign In" ? (
-            <p>
-              New to Netflix?{" "}
-              <span onClick={() => setSignState("Sign Up")}>
-                Sign Up Now
-              </span>
+            <p onClick={() => setSignState("Sign Up")}>
+              {t('auth.switchToSignUp')}
             </p>
           ) : (
-            <p>
-              Already have account?{" "}
-              <span onClick={() => setSignState("Sign In")}>
-                Sign In Now
-              </span>
+            <p onClick={() => setSignState("Sign In")}>
+              {t('auth.switchToSignIn')}
             </p>
           )}
         </div>

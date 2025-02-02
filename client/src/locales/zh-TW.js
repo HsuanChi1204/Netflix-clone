@@ -9,6 +9,21 @@ export default {
     trending: '最新熱門',
     browseByLanguage: '依語言瀏覽'
   },
+  home: {
+    hero: {
+      description: '觀看最新、最熱門的電影和電視節目。隨時隨地，想看就看。',
+      play: '立即播放',
+      moreInfo: '更多資訊'
+    },
+    categories: {
+      trending: '熱門趨勢',
+      popular: '最受歡迎',
+      topRated: '最高評分',
+      upcoming: '即將上映',
+      nowPlaying: '現正熱映',
+      netflix: 'Netflix 原創'
+    }
+  },
   movie: {
     learnMore: '了解更多',
     play: '播放',
@@ -45,13 +60,33 @@ export default {
   auth: {
     login: '登入',
     logout: '登出',
+    register: '註冊',
+    email: '電子郵件',
+    password: '密碼',
+    name: '姓名',
+    signIn: '登入',
+    signUp: '註冊',
+    switchToSignUp: '還沒有帳號？註冊',
+    switchToSignIn: '已經有帳號？登入',
     pleaseLogin: '請先登入',
-    sessionExpired: '登入已過期，請重新登入'
+    sessionExpired: '登入已過期，請重新登入',
+    loginSuccess: '登入成功！',
+    registerSuccess: '註冊成功！',
+    emailRequired: '請輸入電子郵件',
+    passwordRequired: '請輸入密碼',
+    nameRequired: '請輸入姓名',
+    passwordLength: '密碼至少需要6個字符',
+    networkError: '網絡錯誤，請檢查您的網絡連接',
+    operationFailed: '操作失敗，請稍後重試',
+    rememberMe: '記住我',
+    needHelp: '需要幫助？'
   },
   common: {
     error: '發生錯誤，請稍後重試',
     loading: '載入中...',
     noResults: '沒有找到相關結果',
-    close: '關閉'
+    close: '關閉',
+    moreInfo: '更多資訊',
+    play: '播放'
   }
 }; 

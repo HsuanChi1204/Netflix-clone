@@ -29,7 +29,26 @@ const MyList = () => {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                setFavorites(response.data);
+                
+                // 獲取每個電影的詳細信息
+                const favoritesWithDetails = await Promise.all(
+                    response.data.map(async (favorite) => {
+                        try {
+                            const movieDetails = await fetchMovieDetails(favorite.movieId);
+                            return {
+                                ...favorite,
+                                title: movieDetails?.title || favorite.title,
+                                posterPath: movieDetails?.poster_path || favorite.posterPath, // 使用當前語言的海報
+                                backdropPath: movieDetails?.backdrop_path // 保存背景圖片路徑
+                            };
+                        } catch (error) {
+                            console.error(`獲取電影 ${favorite.movieId} 詳細信息失敗:`, error);
+                            return favorite;
+                        }
+                    })
+                );
+                
+                setFavorites(favoritesWithDetails);
             } catch (error) {
                 console.error('獲取收藏清單失敗:', error);
                 if (error.response?.status === 401) {
@@ -44,7 +63,7 @@ const MyList = () => {
         };
 
         fetchFavorites();
-    }, [navigate, t]);
+    }, [navigate, t, currentLanguage]);
 
     const handleRemoveFavorite = async (event, movieId) => {
         event.preventDefault();
@@ -52,8 +71,17 @@ const MyList = () => {
         try {
             const token = localStorage.getItem('token');
             await axios.delete(`http://localhost:5001/api/favorites/${movieId}`);
-            setFavorites(favorites.filter(fav => fav.movieId !== movieId));
+            
+            // 更新收藏列表
+            const updatedFavorites = favorites.filter(fav => fav.movieId !== movieId.toString());
+            setFavorites(updatedFavorites);
+            
             toast.success(t('movie.removedFromList'));
+            
+            // 如果是在 modal 中取消收藏，則關閉 modal
+            if (selectedMovie && selectedMovie.id === movieId) {
+                closeModal();
+            }
         } catch (error) {
             console.error('移除收藏失敗:', error);
             if (error.response?.status === 401) {
@@ -267,7 +295,8 @@ const MyList = () => {
     if (loading) {
         return (
             <div className="my-list loading">
-                <div className="loading-spinner">{t('common.loading')}</div>
+                <div className="loading-spinner"></div>
+                <div className="loading-text">{t('common.loading')}</div>
             </div>
         );
     }
@@ -291,6 +320,12 @@ const MyList = () => {
                                     <img
                                         src={`https://image.tmdb.org/t/p/w500${favorite.posterPath}`}
                                         alt={favorite.title}
+                                        onError={(e) => {
+                                            // 如果海報加載失敗，使用背景圖片作為備用
+                                            if (favorite.backdropPath) {
+                                                e.target.src = `https://image.tmdb.org/t/p/w500${favorite.backdropPath}`;
+                                            }
+                                        }}
                                     />
                                     <div className="title-overlay">{favorite.title}</div>
                                 </Link>
