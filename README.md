@@ -2,7 +2,7 @@
 
 A full-stack Netflix clone built with the MERN stack (MongoDB, Express.js, React.js, Node.js), featuring user authentication, movie browsing, favorites management, and a comment system.
 
-🌐 [Live Demo](https://netflix-clone-hsuan.vercel.app/) | [API Documentation](https://github.com/HsuanChi1204/Netflix-clone#-api-endpoints) | [Backend Repository](https://github.com/HsuanChi1204/Netflix-clone)
+🌐 [Live Demo](https://client-umber-one.vercel.app/) | [API Documentation](https://github.com/HsuanChi1204/Netflix-clone#-api-endpoints) | [Backend Repository](https://github.com/HsuanChi1204/Netflix-clone)
 
 ## 📸 Screenshots
 
