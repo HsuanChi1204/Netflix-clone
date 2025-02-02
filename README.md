@@ -2,16 +2,21 @@
 
 A full-stack Netflix clone built with the MERN stack (MongoDB, Express.js, React.js, Node.js), featuring user authentication, movie browsing, favorites management, and a comment system.
 
+🌐 [Live Demo](https://netflix-clone-hsuan.vercel.app/) | [API Documentation](https://github.com/HsuanChi1204/Netflix-clone#-api-endpoints) | [Backend Repository](https://github.com/HsuanChi1204/Netflix-clone)
+
 ## 📸 Screenshots
 
 ### Home Page
 ![Home Page](.github/assets/home-preview.png)
 
-### Movie Details with Comments
+### Movie Details
 ![Movie Details](.github/assets/movie-detail.png)
 
 ### Favorites List
 ![Favorites List](.github/assets/favorites-list.png)
+
+### Comments Function
+![Comments Function](.github/assets/comments-view.png)
 
 ## 🚀 Features
 
@@ -19,24 +24,28 @@ A full-stack Netflix clone built with the MERN stack (MongoDB, Express.js, React
   - JWT-based authentication
   - Secure password hashing
   - Protected routes
+  - Session management
 
 - **Movie Experience**
   - Browse movies by categories
   - Watch movie trailers
   - Search functionality
   - Responsive video player
+  - Multi-language support (English/Traditional Chinese)
 
 - **Interactive Features**
   - Add/remove favorites
   - Comment system with ratings
   - Personal watchlist
   - Dynamic UI updates
+  - Real-time language switching
 
 - **Modern UI/UX**
   - Netflix-like interface
   - Responsive design
   - Smooth animations
   - Loading states
+  - Error handling with toast notifications
 
 ## 🛠 Technology Stack
 
@@ -47,6 +56,7 @@ A full-stack Netflix clone built with the MERN stack (MongoDB, Express.js, React
 - **Axios** - HTTP client
 - **React Icons** - Icon components
 - **React Toastify** - Toast notifications
+- **i18next** - Internationalization
 
 ### Backend
 - **Node.js** - Runtime environment
@@ -61,6 +71,8 @@ A full-stack Netflix clone built with the MERN stack (MongoDB, Express.js, React
 - **Jest** - Testing
 - **GitHub Actions** - CI/CD
 - **ESLint** - Code linting
+- **Vercel** - Frontend deployment
+- **Railway** - Backend deployment
 
 ## 🚦 Getting Started
 
@@ -101,6 +113,7 @@ JWT_SECRET=your_jwt_secret
 
 # client/.env
 VITE_API_URL=http://localhost:5001
+VITE_TMDB_API_KEY=your_tmdb_api_key
 ```
 
 4. Start Development Servers
@@ -121,9 +134,11 @@ Netflix-clone/
 ├── client/                # Frontend React application
 │   ├── src/
 │   │   ├── components/    # Reusable components
-│   │   ├── pages/        # Page components
-│   │   ├── assets/       # Static assets
-│   │   └── App.jsx       # Main application
+│   │   ├── contexts/      # Context providers
+│   │   ├── pages/         # Page components
+│   │   ├── locales/       # Translation files
+│   │   ├── assets/        # Static assets
+│   │   └── App.jsx        # Main application
 │   └── package.json
 │
 ├── server/                # Backend Node.js application
@@ -132,7 +147,8 @@ Netflix-clone/
 │   │   ├── controllers/  # Request handlers
 │   │   ├── models/       # Database models
 │   │   ├── routes/       # API routes
-│   │   └── middlewares/  # Custom middlewares
+│   │   ├── middlewares/  # Custom middlewares
+│   │   └── index.js      # Entry point
 │   └── package.json
 │
 └── README.md
@@ -143,12 +159,13 @@ Netflix-clone/
 ### Authentication
 - `POST /api/auth/register` - Register new user
 - `POST /api/auth/login` - User login
-- `GET /api/auth/profile` - Get user profile
+- `GET /api/auth/me` - Get current user info
 
 ### Favorites
 - `GET /api/favorites` - Get user's favorites
 - `POST /api/favorites` - Add to favorites
 - `DELETE /api/favorites/:id` - Remove from favorites
+- `GET /api/favorites/check/:id` - Check if movie is favorited
 
 ### Comments
 - `GET /api/comments/:movieId` - Get movie comments
@@ -168,6 +185,7 @@ JWT_SECRET=your_jwt_secret
 ### Frontend
 ```env
 VITE_API_URL=http://localhost:5001
+VITE_TMDB_API_KEY=your_tmdb_api_key
 ```
 
 ## 🛡 Security Features
@@ -177,14 +195,17 @@ VITE_API_URL=http://localhost:5001
 - Input validation
 - XSS protection
 - CORS configuration
+- Rate limiting
 
 ## 🚧 Future Improvements
-- [ ] Add social authentication
-- [ ] Implement infinite scrolling
-- [ ] Add user profiles
-- [ ] Enhance search functionality
-- [ ] Add more interactive features
-- [ ] Implement real-time updates
+- [ ] Add social authentication (Google, Facebook)
+- [ ] Implement infinite scrolling for movie lists
+- [ ] Add user profiles with avatars
+- [ ] Enhance search with filters and sorting
+- [ ] Add movie recommendations
+- [ ] Implement watch history
+- [ ] Add email verification
+- [ ] Implement password reset
 
 ## 👥 Contributing
 Contributions are welcome! Please feel free to submit a Pull Request.
@@ -195,6 +216,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 - [TMDB API](https://www.themoviedb.org/documentation/api) for movie data
 - [Netflix](https://www.netflix.com) for design inspiration
+- [Vercel](https://vercel.com) for frontend hosting
+- [Railway](https://railway.app) for backend hosting
 
 ---
 Created by [HsuanChi1204](https://github.com/HsuanChi1204)
