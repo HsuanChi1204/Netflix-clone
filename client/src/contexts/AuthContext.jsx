@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
+// 設置 axios 基礎 URL
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
 const AuthContext = createContext();
 
 export const useAuth = () => {
