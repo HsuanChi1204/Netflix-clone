@@ -20,6 +20,7 @@ connectDB();
 const allowedOrigins = [
   'https://netflix-clone-production.vercel.app',
   'https://netflix-clone-client.vercel.app',
+  'https://client-umber-one.vercel.app',
   'http://localhost:3000',
   'http://localhost:5173'
 ];
