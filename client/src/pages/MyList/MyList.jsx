@@ -24,7 +24,7 @@ const MyList = () => {
         const fetchFavorites = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const response = await axios.get('http://localhost:5001/api/favorites', {
+                const response = await axios.get('/api/favorites', {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
@@ -179,7 +179,7 @@ const MyList = () => {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.get(
-                `http://localhost:5001/api/comments/${movieId}`,
+                `/api/comments/${movieId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`

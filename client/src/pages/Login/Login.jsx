@@ -9,6 +9,9 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useLanguage } from "../../contexts/LanguageContext";
 
+// 確保 axios 基礎 URL 設置
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
 const Login = () => {
   const navigate = useNavigate();
   const [signState, setSignState] = useState("Sign In");
@@ -45,7 +48,7 @@ const Login = () => {
     try {
       if (signState === "Sign In") {
         // 登錄
-        const response = await axios.post('http://localhost:5001/api/auth/login', {
+        const response = await axios.post('/api/auth/login', {
           email,
           password
         });
@@ -57,7 +60,7 @@ const Login = () => {
         navigate('/');
       } else {
         // 註冊
-        const response = await axios.post('http://localhost:5001/api/auth/register', {
+        const response = await axios.post('/api/auth/register', {
           name,
           email,
           password

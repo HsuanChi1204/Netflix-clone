@@ -5,6 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 
+// 確保 axios 基礎 URL 設置
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
+
 const AuthWrapper = ({ children }) => {
   const navigate = useNavigate();
 
@@ -13,7 +16,7 @@ const AuthWrapper = ({ children }) => {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
-      axios.get('http://localhost:5001/api/auth/me')
+      axios.get('/api/auth/me')
         .catch(() => {
           localStorage.removeItem('token');
           localStorage.removeItem('user');

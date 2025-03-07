@@ -11,7 +11,7 @@ import { useAuth } from '../../contexts/AuthContext.jsx';
 import PropTypes from 'prop-types';
 
 // 設置 axios 基礎 URL
-axios.defaults.baseURL = 'http://localhost:5001';
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5001';
 
 const TitleCards = ({ title = '', category }) => {
 	const navigate = useNavigate();
